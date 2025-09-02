@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎁 Gift Idea Generator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+      <div class="header">
+          <h1>🎁 Gift Idea Generator</h1>
+          <p>AI-powered personalized gift recommendations</p>
+      </div>
+
+      <div class="form-container">
+          <form id="giftForm">
+              <div class="form-group">
+                  <label for="name">Name *</label>
+                  <input type="text" id="name" name="name" required placeholder="Enter the person's name">
+              </div>
+
+              <div class="form-group">
+                  <label for="age">Age *</label>
+                  <input type="number" id="age" name="age" min="1" max="120" required placeholder="Enter age">
+              </div>
+
+              <div class="form-group">
+                  <label for="hobbies">Hobbies & Interests</label>
+                  <textarea id="hobbies" name="hobbies" placeholder="e.g., reading, cooking, hiking, video games, photography..."></textarea>
+              </div>
+
+              <div class="form-group">
+                  <label for="occasion">Occasion *</label>
+                  <select id="occasion" name="occasion" required>
+                      <option value="">Select an occasion...</option>
+                      <option value="birthday">Birthday</option>
+                      <option value="christmas">Christmas</option>
+                      <option value="anniversary">Anniversary</option>
+                      <option value="wedding">Wedding</option>
+                      <option value="graduation">Graduation</option>
+                      <option value="housewarming">Housewarming</option>
+                      <option value="baby shower">Baby Shower</option>
+                      <option value="valentine's day">Valentine's Day</option>
+                      <option value="mother's day">Mother's Day</option>
+                      <option value="father's day">Father's Day</option>
+                      <option value="get well soon">Get Well Soon</option>
+                  </select>
+              </div>
+
+              <button type="submit" class="submit-btn" id="submitBtn">
+                  Generate Gift Ideas ✨
+              </button>
+          </form>
+
+          <div id="results" class="results-container">
+              <!-- TODO: add results here -->
+          </div>
+
+          <div id="loading" class="loading" style="display: none;">
+              <div class="spinner"></div>
+              <p>Generating personalized gift ideas...</p>
+          </div>
+
+          <div id="error" class="error" style="display: none;">
+              <!-- Error messages will display here -->
+          </div>
+      </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
