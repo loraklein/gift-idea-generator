@@ -1,12 +1,16 @@
 const express = require('express')
 const cors = require('cors')
+const { Ollama } = require('ollama')
 
 const app = express()
 
 // Config
 const PORT = 3000
-const API_URL = 'http://golem:11434/api/chat'
+const HOST = 'http://golem:11434'
 const MODEL = 'gpt-oss:120b'
+
+// Initialize Ollama client
+const ollama = new Ollama({ host: HOST })
 
 // Middleware
 app.use(express.json())
@@ -44,30 +48,18 @@ app.post('/generate-gifts', async function (req, res) {
       
       Rank the gifts from highest to lowest fit score. Be specific and thoughtful in your recommendations.`
       
-      // Make the API call to Ollama
-      const response = await fetch(API_URL, {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-              model: MODEL,
-              messages: [
-                  {
-                      role: 'user',
-                      content: prompt
-                  }
-              ],
-              stream: false
-          })
+      // Make the API call using Ollama library
+      const response = await ollama.chat({
+          model: MODEL,
+          messages: [
+              {
+                  role: 'user',
+                  content: prompt
+              }
+          ]
       })
   
-      if (!response.ok) {
-          throw new Error(`Ollama API error: ${response.status}`)
-      }
-  
-      const data = await response.json()
-      const aiResponse = data.message.content
+      const aiResponse = response.message.content
   
       let giftIdeas
       try {
@@ -94,6 +86,6 @@ app.post('/generate-gifts', async function (req, res) {
 
 app.listen(PORT, () => {
     console.log('🎁 Gift Idea Generator running on port', PORT)
-    console.log('🤖 Ollama URL:', API_URL)
+    console.log('🤖 Ollama Host:', HOST)
     console.log('🧠 Model:', MODEL)
 })
