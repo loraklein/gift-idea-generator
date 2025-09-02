@@ -1,0 +1,12 @@
+{
+  "name": "gift-idea-generator",
+  "version": "1.0.0",
+  "description": "AI-powered gift idea generator using Ollama",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
