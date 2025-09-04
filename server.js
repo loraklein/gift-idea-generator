@@ -9,7 +9,6 @@ const PORT = 3000
 const HOST = 'http://golem:11434'
 const MODEL = 'gpt-oss:120b'
 
-// Initialize Ollama client
 const ollama = new Ollama({ host: HOST })
 
 // Middleware
@@ -48,7 +47,6 @@ app.post('/generate-gifts', async function (req, res) {
       
       Rank the gifts from highest to lowest fit score. Be specific and thoughtful in your recommendations.`
       
-      // Make the API call using Ollama library
       const response = await ollama.chat({
           model: MODEL,
           messages: [
