@@ -35,7 +35,6 @@ async function analyzeGiftDate(giftDate) {
   try {
     const date = new Date(giftDate);
     const today = new Date();
-    const currentYear = today.getFullYear();
     
     // Calculate days until the gift date
     const timeDiff = date.getTime() - today.getTime();
@@ -49,7 +48,7 @@ async function analyzeGiftDate(giftDate) {
     else if (month >= 9 && month <= 11) season = 'fall';
     else season = 'winter';
     
-    // Determine weather patterns for the season
+    // Weather patterns per season
     const weatherPatterns = {
       'spring': 'mild temperatures, occasional rain, perfect for outdoor activities',
       'summer': 'warm to hot weather, ideal for outdoor adventures and summer activities',
@@ -57,7 +56,6 @@ async function analyzeGiftDate(giftDate) {
       'winter': 'cold weather, potential for snow, perfect for indoor entertainment and warm items'
     };
     
-    // Determine timing urgency
     let timingContext;
     if (daysUntil < 0) timingContext = 'past date - consider belated gift options';
     else if (daysUntil <= 3) timingContext = 'urgent - need quick shipping or local pickup options';
