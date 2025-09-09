@@ -154,6 +154,40 @@ body {
     line-height: 1.8;
 }
 
+.seasonal-context {
+    background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+    padding: 1.5rem;
+    border-radius: 3px;
+    margin-bottom: 2rem;
+    border-left: 3px solid #2196f3;
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.1);
+}
+
+.seasonal-context h3 {
+    color: #1976d2;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.context-info {
+    color: #424242;
+    line-height: 1.8;
+    font-size: 0.95rem;
+}
+
+.context-info strong {
+    color: #1976d2;
+}
+
+.form-help {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: #6c757d;
+    font-style: italic;
+}
+
 .gift-item {
     background: #ffffff;
     border: 1px solid #e9ecef;
