@@ -10,24 +10,85 @@ const occasionSelect = document.getElementById('occasion');
 const dateGroup = document.getElementById('dateGroup');
 const giftDateInput = document.getElementById('giftDate');
 
+function getNextOccurrence(month, day) {
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    
+    // get date
+    const thisYearDate = new Date(currentYear, month - 1, day);
+    
+    // if date passed, use next year
+    if (thisYearDate < today) {
+        return new Date(currentYear + 1, month - 1, day);
+    }
+    
+    return thisYearDate;
+}
+
+function getNextBirthday(birthDate) {
+    const birth = new Date(birthDate);
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    
+    // get birthday
+    let nextBirthday = new Date(currentYear, birth.getMonth(), birth.getDate());
+    
+    // if birthday passed, use next year
+    if (nextBirthday < today) {
+        nextBirthday = new Date(currentYear + 1, birth.getMonth(), birth.getDate());
+    }
+    
+    return nextBirthday.toISOString().split('T')[0];
+}
+
 const knownHolidays = {
-    'christmas': () => `${new Date().getFullYear()}-12-25`,
-    'valentine\'s day': () => `${new Date().getFullYear()}-02-14`,
+    'christmas': () => {
+        const nextChristmas = getNextOccurrence(12, 25);
+        return nextChristmas.toISOString().split('T')[0];
+    },
+    'valentine\'s day': () => {
+        const nextValentines = getNextOccurrence(2, 14);
+        return nextValentines.toISOString().split('T')[0];
+    },
     'mother\'s day': () => {
         // Mother's Day is the second Sunday in May
-        const year = new Date().getFullYear();
-        const may = new Date(year, 4, 1);
+        const today = new Date();
+        const currentYear = today.getFullYear();
+        const may = new Date(currentYear, 4, 1); // May 1st
         const firstSunday = may.getDay() === 0 ? 1 : 8 - may.getDay();
         const secondSunday = firstSunday + 7;
-        return `${year}-05-${secondSunday.toString().padStart(2, '0')}`;
+        const thisYearMotherDay = new Date(currentYear, 4, secondSunday);
+        
+        // if Mother's Day already passed, use next year
+        if (thisYearMotherDay < today) {
+            const nextYear = currentYear + 1;
+            const nextMay = new Date(nextYear, 4, 1);
+            const nextFirstSunday = nextMay.getDay() === 0 ? 1 : 8 - nextMay.getDay();
+            const nextSecondSunday = nextFirstSunday + 7;
+            return `${nextYear}-05-${nextSecondSunday.toString().padStart(2, '0')}`;
+        }
+        
+        return `${currentYear}-05-${secondSunday.toString().padStart(2, '0')}`;
     },
     'father\'s day': () => {
         // Father's Day is the third Sunday in June
-        const year = new Date().getFullYear();
-        const june = new Date(year, 5, 1);
+        const today = new Date();
+        const currentYear = today.getFullYear();
+        const june = new Date(currentYear, 5, 1); // June 1st
         const firstSunday = june.getDay() === 0 ? 1 : 8 - june.getDay();
         const thirdSunday = firstSunday + 14;
-        return `${year}-06-${thirdSunday.toString().padStart(2, '0')}`;
+        const thisYearFatherDay = new Date(currentYear, 5, thirdSunday);
+        
+        // if Father's Day passed, use next year
+        if (thisYearFatherDay < today) {
+            const nextYear = currentYear + 1;
+            const nextJune = new Date(nextYear, 5, 1);
+            const nextFirstSunday = nextJune.getDay() === 0 ? 1 : 8 - nextJune.getDay();
+            const nextThirdSunday = nextFirstSunday + 14;
+            return `${nextYear}-06-${nextThirdSunday.toString().padStart(2, '0')}`;
+        }
+        
+        return `${currentYear}-06-${thirdSunday.toString().padStart(2, '0')}`;
     }
 };
 
@@ -36,7 +97,7 @@ occasionSelect.addEventListener('change', function() {
     const selectedOccasion = this.value.toLowerCase();
     
     if (knownHolidays[selectedOccasion]) {
-        // Auto-fill date for known holidays using dynamic calculation
+        // Auto-fill date for known holidays using smart calculation
         giftDateInput.value = knownHolidays[selectedOccasion]();
         dateGroup.style.display = 'none';
         giftDateInput.required = false;
@@ -44,9 +105,39 @@ occasionSelect.addEventListener('change', function() {
         // Show datepicker for custom occasions
         dateGroup.style.display = 'block';
         giftDateInput.required = true;
-        giftDateInput.value = ''; // Clear previous 
+        giftDateInput.value = '';
     }
 });
+
+function validatePastDate(occasion, dateValue) {
+    if (dateValue) {
+        const enteredDateObj = new Date(dateValue);
+        const today = new Date();
+        const daysDiff = Math.ceil((enteredDateObj.getTime() - today.getTime()) / (1000 * 3600 * 24));
+        
+        // If the date is more than a year in the past, ask for confirmation
+        if (daysDiff < -365) {
+            const enteredDateFormatted = new Date(dateValue).toLocaleDateString();
+            
+            const userChoice = confirm(`You have entered a date that is in the past (${enteredDateFormatted}). Are you sure this is the date you wanted to enter?\n\nClick OK to keep this date, or Cancel to change it.`);
+            
+            if (!userChoice) {
+                // User wants to change the date
+                if (occasion === 'birthday') {
+                    const nextBirthday = getNextBirthday(dateValue);
+                    const nextBirthdayFormatted = new Date(nextBirthday).toLocaleDateString();
+                    
+                    if (confirm(`Would you like to use the upcoming birthday on ${nextBirthdayFormatted} instead?`)) {
+                        giftDateInput.value = nextBirthday;
+                        return nextBirthday;
+                    }
+                }
+                return null;
+            }
+        }
+    }
+    return dateValue;
+}
 
 form.addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -60,12 +151,24 @@ form.addEventListener('submit', async function(e) {
 
     // Get form data
     const formData = new FormData(form);
+    const occasion = formData.get('occasion');
+    let giftDate = formData.get('giftDate');
+    
+    giftDate = validatePastDate(occasion, giftDate);
+    
+    if (giftDate === null) {
+        loadingDiv.style.display = 'none';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Generate Gift Ideas ✨';
+        return;
+    }
+    
     const data = {
         name: formData.get('name'),
         age: parseInt(formData.get('age')),
         hobbies: formData.get('hobbies'),
-        occasion: formData.get('occasion'),
-        giftDate: formData.get('giftDate')
+        occasion: occasion,
+        giftDate: giftDate
     };
 
     try {
@@ -99,7 +202,6 @@ form.addEventListener('submit', async function(e) {
     }
 });
 
-// Component functions using pure DOM API
 function createResultsHeader(name) {
     const header = document.createElement('div');
     header.className = 'results-header';
